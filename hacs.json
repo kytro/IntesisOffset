@@ -1,0 +1,9 @@
+{
+  "name": "Intesis Offset",
+  "domains": ["sensor"],
+  "documentation": "https://www.example.com",
+  "issue_tracker": "https://www.example.com/issues",
+  "zip_release": true,
+  "filename": "intesis_offset.zip",
+  "render_readme": true
+}

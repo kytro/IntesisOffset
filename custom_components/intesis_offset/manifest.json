@@ -1,0 +1,8 @@
+{
+  "domain": "intesis_offset",
+  "name": "Intesis Offset",
+  "documentation": "https://www.example.com",
+  "dependencies": [],
+  "codeowners": ["@kytro"],
+  "requirements": ["pyppeteer"]
+}
