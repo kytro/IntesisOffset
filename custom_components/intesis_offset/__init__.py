@@ -32,12 +32,4 @@ async def async_setup(hass, config):
         discovery.async_load_platform(hass, "sensor", DOMAIN, {}, config)
     )
 
-    # Register the service
-    hass.services.async_register(DOMAIN, "set_offset", set_offset)
-
     return True
-
-async def set_offset(call):
-    # This is where you would implement the logic for setting the offset
-    pass
-
