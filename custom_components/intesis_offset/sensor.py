@@ -22,7 +22,7 @@ class OffsetSensor(Entity):
     async def async_added_to_hass(self):
         """Run when entity about to be added to hass."""
         # Launch the browser
-        self.browser = await launch(headless=False)
+        self.browser = await self.hass.async_add_executor_job(launch, {"headless": False})
         page = await self.browser.newPage()
 
         # Get the configuration from hass.data
