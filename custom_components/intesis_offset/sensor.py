@@ -2,6 +2,8 @@ from homeassistant.helpers.entity import Entity
 from pyppeteer import launch
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL
 
+DOMAIN = "intesis_offset"
+
 class OffsetSensor(Entity):
     def __init__(self, hass):
         self.hass = hass
@@ -106,3 +108,7 @@ class OffsetSensor(Entity):
 
         # Wait for navigation to complete
         await page.waitForNavigation()
+
+async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    """Set up the sensor platform."""
+    async_add_entities([OffsetSensor(hass)])
