@@ -4,6 +4,12 @@ import voluptuous as vol
 
 DOMAIN = "intesis_offset"
 
+DEVICE_SCHEMA = vol.Schema({
+    vol.Required('name'): cv.string,
+    vol.Required('linked_entity_id'): cv.entity_id,
+    vol.Required('entity_id'): cv.string,
+})
+
 CONFIG_SCHEMA = vol.Schema(
     {
         DOMAIN: vol.Schema(
@@ -11,9 +17,7 @@ CONFIG_SCHEMA = vol.Schema(
                 vol.Required(CONF_USERNAME): cv.string,
                 vol.Required(CONF_PASSWORD): cv.string,
                 vol.Required(CONF_URL): cv.url,
-                vol.Required(CONF_DEVICES): vol.Schema(
-                    {cv.entity_id: cv.string}
-                ),
+                vol.Required(CONF_DEVICES): vol.Schema({cv.string: DEVICE_SCHEMA}),
             }
         )
     },
