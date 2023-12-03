@@ -21,12 +21,6 @@ class OffsetSensor(Entity):
         
     async def async_added_to_hass(self):
         """Run when entity about to be added to hass."""
-        await self.hass.async_add_executor_job(self.added_to_hass)
-        
-    async def async_added_to_hass(self):
-        """Run when entity about to be added to hass."""
-        await self.hass.async_add_executor_job(self.added_to_hass)
-        """Run when entity about to be added to hass."""
         # Launch the browser
         self.browser = await launch(headless=False)
         page = await self.browser.newPage()
@@ -57,6 +51,7 @@ class OffsetSensor(Entity):
 
         # Perform the initial update
         await self.async_update(page)
+
 
     async def async_update(self, page):
         # Check if login has timed out
