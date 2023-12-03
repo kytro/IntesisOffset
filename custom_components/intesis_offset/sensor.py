@@ -18,12 +18,16 @@ class OffsetSensor(Entity):
     @property
     def state_attributes(self):
         return self._attributes
-        
+
+    async def async_added_to_hass(self):
+        """Run when entity about to be added to hass."""
+        await self.hass.async_add_executor_job(self.added_to_hass)
+
     def added_to_hass(self):
         """Run when entity about to be added to hass."""
         # Launch the browser
-        self.browser = await launch(headless=False)
-        page = await self.browser.newPage()
+        self.browser = launch(headless=False)
+        page = self.browser.newPage()
 
         # Get the configuration from hass.data
         conf = self.hass.data[DOMAIN]
@@ -34,27 +38,24 @@ class OffsetSensor(Entity):
         url = conf[CONF_URL]
 
         # Navigate to the login page
-        await page.goto(url)
+        page.goto(url)
 
         # Enter the username and password
-        await page.type('input[name="signin[username]"]', username)
-        await page.type('input[name="signin[password]"]', password)
+        page.type('input[name="signin[username]"]', username)
+        page.type('input[name="signin[password]"]', password)
 
         # Click the submit button
-        await page.click('input[type="submit"]')
+        page.click('input[type="submit"]')
 
         # Wait for navigation to complete
-        await page.waitForNavigation()
+        page.waitForNavigation()
 
         # Navigate to the next page
-        await page.goto('https://accloud.intesis.com/device/list')
+        page.goto('https://accloud.intesis.com/device/list')
 
         # Perform the initial update
-        await self.async_update(page)
+        self.update(page)
 
-    async def async_added_to_hass(self):
-        """Run when entity about to be added to hass."""
-        await self.hass.async_add_executor_job(self.added_to_hass)
     async def async_update(self, page):
         # Check if login has timed out
         if await page.evaluate('''() => !document.querySelector('ul.devices')'''):
@@ -113,5 +114,5 @@ class OffsetSensor(Entity):
         await page.waitForNavigation()
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-        """Set up the sensor platform."""
-        async_add_entities([OffsetSensor(hass)])
+    """Set up the sensor platform."""
+    async_add_entities([OffsetSensor(hass)])
