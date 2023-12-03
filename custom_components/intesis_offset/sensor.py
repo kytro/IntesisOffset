@@ -19,13 +19,13 @@ class OffsetSensor(Entity):
     def state_attributes(self):
         return self._attributes
         
-async def async_added_to_hass(self):
-    """Run when entity about to be added to hass."""
-    await self.hass.async_add_executor_job(self.added_to_hass)
-    
-async def async_added_to_hass(self):
-    """Run when entity about to be added to hass."""
-    await self.hass.async_add_executor_job(self.added_to_hass)
+    async def async_added_to_hass(self):
+        """Run when entity about to be added to hass."""
+        await self.hass.async_add_executor_job(self.added_to_hass)
+        
+    async def async_added_to_hass(self):
+        """Run when entity about to be added to hass."""
+        await self.hass.async_add_executor_job(self.added_to_hass)
         """Run when entity about to be added to hass."""
         # Launch the browser
         self.browser = await launch(headless=False)
@@ -115,6 +115,6 @@ async def async_added_to_hass(self):
         # Wait for navigation to complete
         await page.waitForNavigation()
 
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    """Set up the sensor platform."""
-    async_add_entities([OffsetSensor(hass)])
+    async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+        """Set up the sensor platform."""
+        async_add_entities([OffsetSensor(hass)])
