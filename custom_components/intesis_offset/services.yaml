@@ -1,9 +1,0 @@
-set_offset:
-  description: Set the offset
-  fields:
-    entity:
-      description: The climate entity
-      example: 0
-    offset:
-      description: The offset to set (-5 to 5)
-      example: 0
