@@ -64,7 +64,7 @@ class IntesisOffsetSensor(Entity):
         self._linked_entity_id = device['linked_entity_id']
         self._linked_entity_state = None
         self._fetcher = fetcher
-        self._state = get_offset()
+        self._state = self.get_offset()
     
     def get_offset(self):
         self._state =  self._fetcher.fetch_data (self._name)
