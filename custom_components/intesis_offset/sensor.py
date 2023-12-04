@@ -10,7 +10,7 @@ class IntesisOffsetSensor(Entity):
     def __init__(self, device, username, password, url):
         self._name = device['name']
         self._entity_id = device['entity_id']
-        self._state = None
+        self._state = 0
         self._unique_id = device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._linked_entity_state = None
@@ -40,7 +40,6 @@ class IntesisOffsetSensor(Entity):
     def device_state_attributes(self):
         """Return the state attributes of the sensor."""
         return {
-            'linked_sensor_state': self.linked_sensor_state,
             'test': 'ok'
         }
         
