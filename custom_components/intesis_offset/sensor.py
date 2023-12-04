@@ -81,7 +81,7 @@ class IntesisOffsetSensor(Entity):
     def extra_state_attributes(self):
         """Return the state attributes of the sensor."""
         return {
-            'test': 'ok'
+            'Linked Entity': self._linked_entity_id 
         }
         
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
