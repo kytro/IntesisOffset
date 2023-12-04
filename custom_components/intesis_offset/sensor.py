@@ -64,6 +64,8 @@ class IntesisOffsetSensor(Entity):
         self._linked_entity_id = device['linked_entity_id']
         self._linked_entity_state = None
         self._fetcher = fetcher
+    
+    async def async_init(self):
         self._state = await self.get_offset()
     
     async def get_offset(self):
@@ -109,6 +111,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     sensors = []
     for device_name, device_config in conf[CONF_DEVICES].items():
         sensor = IntesisOffsetSensor(device_config, fetcher)
+        await sensor.async_init()
         sensors.append(sensor)
 
     async_add_entities(sensors, True)
