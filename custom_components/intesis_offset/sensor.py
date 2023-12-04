@@ -29,14 +29,15 @@ class WebFetcher:
         
         # Navigate to the next page
         await page.goto('https://accloud.intesis.com/device/list')
+        await self.update(page)
 
-    async def fetch_data(self):
+    async def fetch_data(self, device_name):
         if self.page is None:
             await self.login()
 
         # Check if the page has the right elements
         # Replace 'element_selector' with the actual selector
-        element = await self.page.querySelector('element_selector')
+        element = await self.page.querySelector('ul.devices')
         if element is None:
             await self.login()
 
@@ -47,7 +48,7 @@ class WebFetcher:
         return data
 
 class IntesisOffsetSensor(Entity):
-    def __init__(self, device, username, password, url):
+    def __init__(self, device, fetcher):
         self._name = device['name']
         self._entity_id = device['entity_id']
         self._state = 0
@@ -88,11 +89,14 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     """Set up the sensor platform."""
     # Get the configuration for this domain
     conf = hass.data[DOMAIN]
+    
+    # Create a single WebFetcher for all devices
+    fetcher = WebFetcher(conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
 
     # Create a sensor for each device
     sensors = []
     for device_name, device_config in conf[CONF_DEVICES].items():
-        sensor = IntesisOffsetSensor(device_config, conf[CONF_USERNAME], conf[CONF_PASSWORD], conf[CONF_URL])
+        sensor = IntesisOffsetSensor(device_config, fetcher)
         sensors.append(sensor)
 
     async_add_entities(sensors, True)
