@@ -37,7 +37,7 @@ class IntesisOffsetSensor(Entity):
         return self._unique_id
 
     @property
-    def device_state_attributes(self):
+    def extra_state_attributes(self):
         """Return the state attributes of the sensor."""
         return {
             'test': 'ok'
