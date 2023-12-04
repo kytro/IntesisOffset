@@ -1,10 +1,12 @@
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
+import logging
 from pyppeteer import launch
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEVICES
 
 DOMAIN = "intesis_offset"
+_LOGGER = logging.getLogger(__name__)
 
 class WebFetcher:
     def __init__(self, url, username, password):
@@ -49,7 +51,7 @@ class WebFetcher:
 
 class IntesisOffsetSensor(Entity):
     def __init__(self, device, fetcher):
-        self._name = device['name']
+        self._name = device['namse']
         self._entity_id = device['entity_id']
         self._state = 0
         self._unique_id = device['entity_id']
@@ -89,7 +91,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     """Set up the sensor platform."""
     # Get the configuration for this domain
     conf = hass.data[DOMAIN]
-    
+    _LOGGER.info("URL: %s", conf[CONF_URL])
     # Create a single WebFetcher for all devices
     fetcher = WebFetcher(conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
 
