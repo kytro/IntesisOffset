@@ -1,6 +1,6 @@
 from homeassistant.helpers.entity import Entity
 from pyppeteer import launch
-from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL
+from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEVICES
 
 DOMAIN = "intesis_offset"
 
