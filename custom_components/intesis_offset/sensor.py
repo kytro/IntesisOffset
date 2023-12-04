@@ -25,6 +25,16 @@ class IntesisOffsetSensor(Entity):
     @property
     def state(self):
         return self._state
+     
+ async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
+    """Set up the sensor platform."""
+    # Get the configuration for this domain
+    conf = hass.data[DOMAIN]
 
-    def update(self):
-        self._state = self.client.get_device_data(self._entity_id)
+    # Create a sensor for each device
+    sensors = []
+    for device_name, device_config in conf[CONF_DEVICES].items():
+        sensor = IntesisOffsetSensor(device_config, conf[CONF_USERNAME], conf[CONF_PASSWORD], conf[CONF_URL])
+        sensors.append(sensor)
+
+    async_add_entities(sensors, True)
