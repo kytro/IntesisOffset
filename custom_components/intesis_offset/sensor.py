@@ -9,6 +9,7 @@ class IntesisOffsetSensor(Entity):
         self._name = device['name']
         self._entity_id = device['entity_id']
         self._state = None
+        self._unique_id = device['entity_id']
 
     @property
     def name(self):
@@ -25,6 +26,11 @@ class IntesisOffsetSensor(Entity):
     @property
     def state(self):
         return self._state
+        
+    @property
+    def unique_id(self):
+        """Return a unique ID."""
+        return self._unique_id
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensor platform."""
