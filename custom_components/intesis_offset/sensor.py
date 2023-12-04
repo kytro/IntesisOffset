@@ -38,14 +38,21 @@ class WebFetcher:
             await self.login()
 
         # Check if the page has the right elements
-        # Replace 'element_selector' with the actual selector
         element = await self.page.querySelector('ul.devices')
         if element is None:
             await self.login()
+            
+        # Get the device IDs
+        device_ids = await page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
+        
+        # Click on the device name to navigate to the device page
+        await page.click(f"span[id='{device_id}_name']")
+        
+        # Wait for the offset selector to be visible
+        await page.waitForSelector("select#vtempOffset")
 
         # Fetch data from the website
-        # Replace 'data_selector' with the actual selector
-        data = await self.page.querySelectorEval('data_selector', '(element) => element.textContent')
+        data = await page.evaluate('''() => document.querySelector("select#vtempOffset").value''')
 
         return data
 
@@ -53,12 +60,15 @@ class IntesisOffsetSensor(Entity):
     def __init__(self, device, fetcher):
         self._name = device['name']
         self._entity_id = device['entity_id']
-        self._state = 0
         self._unique_id = device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._linked_entity_state = None
         self._fetcher = fetcher
-        
+        self._state = get_offset()
+    
+    def get_offset(self):
+        self._state =  self._fetcher.fetch_data (self._name)
+    
     @property
     def name(self):
         return self._name
