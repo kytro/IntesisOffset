@@ -57,7 +57,7 @@ class IntesisOffsetSensor(Entity):
         self._unique_id = device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._linked_entity_state = None
-        self._fetcher = WebFetcher(url, username, password)
+        self._fetcher = fetcher
         
     @property
     def name(self):
@@ -91,7 +91,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     """Set up the sensor platform."""
     # Get the configuration for this domain
     conf = hass.data[DOMAIN]
-    _LOGGER.info("URL: %s", conf[CONF_URL])
+    
     # Create a single WebFetcher for all devices
     fetcher = WebFetcher(conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
 
