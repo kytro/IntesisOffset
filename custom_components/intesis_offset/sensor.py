@@ -51,7 +51,7 @@ class WebFetcher:
 
 class IntesisOffsetSensor(Entity):
     def __init__(self, device, fetcher):
-        self._name = device['namse']
+        self._name = device['name']
         self._entity_id = device['entity_id']
         self._state = 0
         self._unique_id = device['entity_id']
