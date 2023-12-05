@@ -119,7 +119,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     # Create a sensor for each device
     sensors = []
     for device_name, device_config in conf[CONF_DEVICES].items():
-        sensor = IntesisOffsetSensor(device_config, hass, fetcher)
+        sensor = IntesisOffsetSensor(hass, device_config, fetcher)
         await sensor.async_init()
         sensors.append(sensor)
 
