@@ -19,6 +19,7 @@ class WebFetcher:
         self.password = password
         self.page = None
         self.browser = None
+        self.executor = ThreadPoolExecutor(max_workers=1)
 
     def launch_browser(self):
         return launch()    
