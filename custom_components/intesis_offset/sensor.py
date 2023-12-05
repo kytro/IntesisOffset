@@ -35,10 +35,6 @@ class WebFetcher:
         await page.goto('https://accloud.intesis.com/device/list')
         await self.update(page)
         
-    async def _async_launch():
-        browser = await launch()
-        return browser
-
     async def fetch_data(self, device_name):
         if self.page is None:
             await self.login()
@@ -66,6 +62,10 @@ class WebFetcher:
         #data = await self.page.evaluate('''() => document.querySelector("select#vtempOffset").value''')
 
         return 0
+
+async def _async_launch():
+    browser = await launch()
+    return browser
         
 class IntesisOffsetSensor(Entity):
     def __init__(self, hass, device, fetcher):
