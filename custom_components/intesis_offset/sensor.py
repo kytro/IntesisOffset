@@ -10,7 +10,6 @@ from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEV
 DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
 
-
 class WebFetcher:
     def __init__(self, hass, url, username, password):
         self._hass = hass
@@ -20,8 +19,11 @@ class WebFetcher:
         self.page = None
         self.browser = None
 
+    def launch_browser(self):
+        return launch()
+
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(launch)
+        self.browser = await self._hass.async_add_executor_job(self.launch_browser)
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
 
