@@ -1,5 +1,7 @@
 import logging
+import asyncio
 
+from concurrent.futures import ThreadPoolExecutor
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -17,10 +19,17 @@ class WebFetcher:
         self.password = password
         self.page = None
         self.browser = None
-            
+
+    def launch_browser(self):
+        return launch()    
+    
+    def new_page(self, browser):
+        return browser.newPage()
+        
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(launch)
-        self.page = await self._hass.async_add_executor_job(self.browser.newPage)
+        loop = asyncio.get_event_loop()
+        self.browser = await loop.run_in_executor(self.executor, self.launch_browser)
+        self.page = await loop.run_in_executor(self.executor, self.new_page, self.browser)
         await self.page.goto(self.url)
         
         # Replace 'username_selector' and 'password_selector' with the actual selectors
