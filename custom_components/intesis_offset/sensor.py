@@ -19,25 +19,25 @@ class WebFetcher:
         self.browser = None
             
     async def login(self):
-        self.browser = launch
+        await self.browser = launch
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
         
         # Replace 'username_selector' and 'password_selector' with the actual selectors
-        #await self.page.type('input[name="signin[username]"]', username)
-        #await self.page.type('input[name="signin[password]"]', password)
+        await self.page.type('input[name="signin[username]"]', username)
+        await self.page.type('input[name="signin[password]"]', password)
 
         # Replace 'login_button_selector' with the actual selector
-        #await self.page.click('input[type="submit"]')
-        #await self.page.waitForNavigation()
+        await self.page.click('input[type="submit"]')
+        await self.page.waitForNavigation()
         
         # Navigate to the next page
-        #await page.goto('https://accloud.intesis.com/device/list')
-        #await self.update(page)
+        await page.goto('https://accloud.intesis.com/device/list')
+        await self.update(page)
 
-    async def fetch_data(self, device_name):
+    def fetch_data(self, device_name):
         if self.page is None:
-            await self._hass.async_add_executor_job(self.login)
+            await self.login()
 
         # Check if the page has the right elements
         #element = await self.page.querySelector('ul.devices')
@@ -76,7 +76,7 @@ class IntesisOffsetSensor(Entity):
         self._state = await self.get_offset()
     
     async def get_offset(self):
-        self._state =  await self._fetcher.fetch_data (self._name)
+        self._state =  await  hass.async_add_executor_job(self._fetcher.fetch_data, self._name)
     
     @property
     def name(self):
