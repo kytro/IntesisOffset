@@ -64,14 +64,14 @@ class WebFetcher:
         return 0
         
 class IntesisOffsetSensor(Entity):
-    def __init__(self, hass, device, fetcher):
-        self._hass = hass
+    def __init__(self, device, hass, fetcher):
         self._name = device['name']
         self._entity_id = device['entity_id']
         self._unique_id = device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._linked_entity_state = None
         self._fetcher = fetcher
+        self._hass = hass
     
     async def async_init(self):
         self._state = await self.get_offset()
