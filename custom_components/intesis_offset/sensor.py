@@ -64,7 +64,8 @@ class WebFetcher:
         return 0
         
 class IntesisOffsetSensor(Entity):
-    def __init__(self, device, fetcher):
+    def __init__(self, hass, device, fetcher):
+        self._hass = hass
         self._name = device['name']
         self._entity_id = device['entity_id']
         self._unique_id = device['entity_id']
@@ -118,7 +119,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     # Create a sensor for each device
     sensors = []
     for device_name, device_config in conf[CONF_DEVICES].items():
-        sensor = IntesisOffsetSensor(device_config, fetcher)
+        sensor = IntesisOffsetSensor(device_config, hass, fetcher)
         await sensor.async_init()
         sensors.append(sensor)
 
