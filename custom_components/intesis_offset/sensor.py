@@ -17,9 +17,12 @@ class WebFetcher:
         self.password = password
         self.page = None
         self.browser = None
-            
+    
+    def launch_browser():
+        return asyncio.run(launch(headless=True))    
+    
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(launch(headless=True))
+        self.browser = await self._hass.async_add_executor_job(self.launch_browser)
         #self.page = await self.browser.newPage()
         #await self.page.goto(self.url)
         
