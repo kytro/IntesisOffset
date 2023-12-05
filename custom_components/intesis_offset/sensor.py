@@ -52,7 +52,7 @@ class WebFetcher:
         # Check if the page has the right elements
         element = await self.page.querySelector('ul.devices')
         if element is None:
-            await self.login())
+            await self.login()
             
         # Get the device IDs
         device_ids = await self.page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
