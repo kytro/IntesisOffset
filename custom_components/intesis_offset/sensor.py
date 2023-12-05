@@ -44,27 +44,32 @@ class WebFetcher:
 
     async def fetch_data(self, device_name):
         if self.page is None:
-            await self.login()
+            await self._hass.async_add_executor_job(partial(sync_login, self))
 
         # Check if the page has the right elements
         element = await self.page.querySelector('ul.devices')
         if element is None:
-            await self.login()
+            await self._hass.async_add_executor_job(partial(sync_login, self))
             
         # Get the device IDs
-        device_ids = await page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
+        device_ids = await self.page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
+        
+        # Find the correct device_id from device_ids using device_name
+        device_id = next((id for id in device_ids if device_name in id), None)
+        if device_id is None:
+            raise ValueError(f"No device found with name {device_name}")
         
         # Click on the device name to navigate to the device page
-        await page.click(f"span[id='{device_id}_name']")
+        await self.page.click(f"span[id='{device_id}_name']")
         
         # Wait for the offset selector to be visible
-        await page.waitForSelector("select#vtempOffset")
+        await self.page.waitForSelector("select#vtempOffset")
 
         # Fetch data from the website
-        data = await page.evaluate('''() => document.querySelector("select#vtempOffset").value''')
+        data = await self.page.evaluate('''() => document.querySelector("select#vtempOffset").value''')
 
         return data
-
+        
 class IntesisOffsetSensor(Entity):
     def __init__(self, device, fetcher):
         self._name = device['name']
@@ -115,7 +120,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     
     # Create a single WebFetcher for all devices
     fetcher = WebFetcher(hass, conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
-    await hass.async_add_executor_job(partial(sync_login, fetcher))
+    #await hass.async_add_executor_job(partial(sync_login, fetcher))
 
     # Create a sensor for each device
     sensors = []
