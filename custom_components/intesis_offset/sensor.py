@@ -14,7 +14,7 @@ _LOGGER = logging.getLogger(__name__)
 def sync_login(fetcher):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    return loop.run_until_complete(fetcher.login())
+    return loop.run_until_complete(fetcher._login())
 
 class WebFetcher:
     def __init__(self, hass, url, username, password):
@@ -26,6 +26,9 @@ class WebFetcher:
         self.browser = None
         
     async def login(self):
+        await self._hass.async_add_executor_job(partial(sync_login, self))
+        
+    async def _login(self):
         self.browser = await launch(headless=True)
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
@@ -44,12 +47,12 @@ class WebFetcher:
 
     async def fetch_data(self, device_name):
         if self.page is None:
-            await self._hass.async_add_executor_job(partial(sync_login, self))
+            await self.login()
 
         # Check if the page has the right elements
         element = await self.page.querySelector('ul.devices')
         if element is None:
-            await self._hass.async_add_executor_job(partial(sync_login, self))
+            await self.login())
             
         # Get the device IDs
         device_ids = await self.page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
