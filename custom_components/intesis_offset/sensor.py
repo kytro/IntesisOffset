@@ -19,7 +19,7 @@ class WebFetcher:
         self.browser = None
             
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(launch)
+        self.browser = launch
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
         
@@ -37,7 +37,7 @@ class WebFetcher:
 
     async def fetch_data(self, device_name):
         if self.page is None:
-            await self.login()
+            await await self._hass.async_add_executor_job(self.login)
 
         # Check if the page has the right elements
         #element = await self.page.querySelector('ul.devices')
