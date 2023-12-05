@@ -12,7 +12,9 @@ DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
 
 def sync_launch():
-    return asyncio.get_event_loop().run_until_complete(launch(headless=True))
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    return loop.run_until_complete(launch(headless=True))
 
 class WebFetcher:
     def __init__(self, hass, url, username, password):
