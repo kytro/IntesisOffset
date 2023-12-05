@@ -4,6 +4,6 @@
   "documentation": "https://www.example.com",
   "dependencies": [],
   "codeowners": ["@kytro"],
-  "requirements": ["pyppeteer"],
+  "requirements": ["pyppeteer", "nest_asyncio"],
   "version": "0.0.1"
 }
