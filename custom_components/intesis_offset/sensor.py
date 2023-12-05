@@ -1,4 +1,5 @@
 import logging
+import asyncio
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
