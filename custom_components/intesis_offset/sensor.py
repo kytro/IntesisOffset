@@ -19,7 +19,7 @@ class WebFetcher:
         self.browser = None
             
     async def login(self):
-        self.browser = await launch()
+        self.browser = await _async_launch()
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
         
@@ -34,6 +34,10 @@ class WebFetcher:
         # Navigate to the next page
         await page.goto('https://accloud.intesis.com/device/list')
         await self.update(page)
+        
+    async def _async_launch():
+        browser = await launch()
+        return browser
 
     async def fetch_data(self, device_name):
         if self.page is None:
