@@ -106,7 +106,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     conf = hass.data[DOMAIN]
     
     # Create a single WebFetcher for all devices
-    fetcher = WebFetcher(conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
+    fetcher = WebFetcher(hass, conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
 
     # Create a sensor for each device
     sensors = []
