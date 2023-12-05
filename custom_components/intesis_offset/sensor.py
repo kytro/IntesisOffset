@@ -22,7 +22,11 @@ class WebFetcher:
         self.browser = None
 
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(launch).result()
+        browser_future = self._hass.async_add_executor_job(launch)
+
+        for future in asyncio.as_completed([browser_future]):
+            self.browser = future.result()
+            
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
 
