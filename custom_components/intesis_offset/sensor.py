@@ -76,7 +76,7 @@ class IntesisOffsetSensor(Entity):
         self._state = await self.get_offset()
     
     async def get_offset(self):
-        self._state =  await hass.async_add_executor_job(self._fetcher.fetch_data, self._name)
+        self._state =  await self._hass.async_add_executor_job(self._fetcher.fetch_data, self._name)
     
     @property
     def name(self):
