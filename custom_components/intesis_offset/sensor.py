@@ -1,4 +1,5 @@
 import logging
+import asyncio
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
@@ -20,7 +21,7 @@ class WebFetcher:
         self.browser = None
 
     def launch_browser(self):
-        return launch()
+        return asyncio.get_event_loop().run_until_complete(launch())
 
     async def login(self):
         self.browser = await self._hass.async_add_executor_job(self.launch_browser)
