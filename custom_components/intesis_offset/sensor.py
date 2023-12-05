@@ -19,7 +19,7 @@ class WebFetcher:
         self.browser = None
             
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(launch, headless=True)
+        self.browser = await self._hass.async_add_executor_job(launch(headless=True))
         #self.page = await self.browser.newPage()
         #await self.page.goto(self.url)
         
