@@ -1,7 +1,5 @@
 import logging
-import asyncio
 
-from concurrent.futures import ThreadPoolExecutor
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -19,18 +17,10 @@ class WebFetcher:
         self.password = password
         self.page = None
         self.browser = None
-        self.executor = ThreadPoolExecutor(max_workers=1)
-
-    def launch_browser(self):
-        return launch()    
-    
-    def new_page(self, browser):
-        return browser.newPage()
-        
+            
     async def login(self):
-        loop = asyncio.get_event_loop()
-        self.browser = await loop.run_in_executor(self.executor, self.launch_browser)
-        self.page = await loop.run_in_executor(self.executor, self.new_page, self.browser)
+        self.browser = await launch()
+        self.page = await self.browser.newPage()
         await self.page.goto(self.url)
         
         # Replace 'username_selector' and 'password_selector' with the actual selectors
@@ -74,20 +64,20 @@ class WebFetcher:
         return 0
         
 class IntesisOffsetSensor(Entity):
-    def __init__(self, device, hass, fetcher):
+    def __init__(self, hass, device, fetcher):
+        self._hass = hass
         self._name = device['name']
         self._entity_id = device['entity_id']
         self._unique_id = device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._linked_entity_state = None
         self._fetcher = fetcher
-        self._hass = hass
     
     async def async_init(self):
         self._state = await self.get_offset()
     
     async def get_offset(self):
-        self._state =  await self._fetcher.fetch_data(self._name)
+        self._state =  await self._hass.async_add_executor_job(self._fetcher.fetch_data, self._name)
     
     @property
     def name(self):
