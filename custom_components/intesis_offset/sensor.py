@@ -11,10 +11,10 @@ from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEV
 DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
 
-def sync_launch():
+def sync_login(fetcher):
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
-    return loop.run_until_complete(launch(headless=True))
+    return loop.run_until_complete(fetcher.login())
 
 class WebFetcher:
     def __init__(self, hass, url, username, password):
@@ -26,10 +26,10 @@ class WebFetcher:
         self.browser = None
         
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(sync_launch)
+        self.browser = await launch(headless=True)
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
-
+        
         # Replace 'username_selector' and 'password_selector' with the actual selectors
         await self.page.type('input[name="signin[username]"]', username)
         await self.page.type('input[name="signin[password]"]', password)
@@ -115,6 +115,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     
     # Create a single WebFetcher for all devices
     fetcher = WebFetcher(hass, conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
+    await hass.async_add_executor_job(partial(sync_login, fetcher))
 
     # Create a sensor for each device
     sensors = []
