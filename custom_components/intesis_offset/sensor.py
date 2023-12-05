@@ -21,7 +21,9 @@ class WebFetcher:
         self.browser = None
 
     def launch_browser(self):
-        return asyncio.get_event_loop().run_until_complete(launch())
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+        return loop.run_until_complete(launch())
 
     async def login(self):
         self.browser = await self._hass.async_add_executor_job(self.launch_browser)
