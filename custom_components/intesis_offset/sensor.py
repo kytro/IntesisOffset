@@ -9,7 +9,8 @@ DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
 
 class WebFetcher:
-    def __init__(self, url, username, password):
+    def __init__(self, hass, url, username, password):
+        self._hass = hass
         self.url = url
         self.username = username
         self.password = password
