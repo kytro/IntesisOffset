@@ -19,8 +19,8 @@ class WebFetcher:
         self.browser = None
             
     async def login(self):
-        self.browser = await launch
-        self.page = await self.browser.newPage()
+        self.browser = self._hass.async_add_executor_job(launch)
+        self.page = await self._hass.async_add_executor_job(self.browser.newPage)
         await self.page.goto(self.url)
         
         # Replace 'username_selector' and 'password_selector' with the actual selectors
@@ -77,7 +77,7 @@ class IntesisOffsetSensor(Entity):
         self._state = await self.get_offset()
     
     async def get_offset(self):
-        self._state =  await self._hass.async_add_executor_job(self._fetcher.fetch_data, self._name)
+        self._state =  await self._fetcher.fetch_data(self._name)
     
     @property
     def name(self):
