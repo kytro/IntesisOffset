@@ -35,7 +35,7 @@ class WebFetcher:
         await page.goto('https://accloud.intesis.com/device/list')
         await self.update(page)
 
-    def fetch_data(self, device_name):
+    async def fetch_data(self, device_name):
         if self.page is None:
             await self.login()
 
