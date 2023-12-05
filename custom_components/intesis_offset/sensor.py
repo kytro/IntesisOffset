@@ -1,5 +1,4 @@
 import logging
-import asyncio
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
@@ -18,55 +17,51 @@ class WebFetcher:
         self.password = password
         self.page = None
         self.browser = None
-        
+            
     async def login(self):
-        loop = asyncio.get_running_loop()
-        await loop.run_in_executor(None, self._login)
-        
-    async def _login(self):
-        self.browser = await launch(headless=True)
-        self.page = await self.browser.newPage()
-        await self.page.goto(self.url)
+        self.browser = await hass.async_add_executor_job(launch, headless=True)
+        #self.page = await self.browser.newPage()
+        #await self.page.goto(self.url)
         
         # Replace 'username_selector' and 'password_selector' with the actual selectors
-        await self.page.type('input[name="signin[username]"]', username)
-        await self.page.type('input[name="signin[password]"]', password)
+        #await self.page.type('input[name="signin[username]"]', username)
+        #await self.page.type('input[name="signin[password]"]', password)
 
         # Replace 'login_button_selector' with the actual selector
-        await self.page.click('input[type="submit"]')
-        await self.page.waitForNavigation()
+        #await self.page.click('input[type="submit"]')
+        #await self.page.waitForNavigation()
         
         # Navigate to the next page
-        await page.goto('https://accloud.intesis.com/device/list')
-        await self.update(page)
+        #await page.goto('https://accloud.intesis.com/device/list')
+        #await self.update(page)
 
     async def fetch_data(self, device_name):
         if self.page is None:
             await self.login()
 
         # Check if the page has the right elements
-        element = await self.page.querySelector('ul.devices')
-        if element is None:
-            await self.login()
+        #element = await self.page.querySelector('ul.devices')
+        #if element is None:
+        #    await self.login()
             
         # Get the device IDs
-        device_ids = await self.page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
+        #device_ids = await self.page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
         
         # Find the correct device_id from device_ids using device_name
-        device_id = next((id for id in device_ids if device_name in id), None)
-        if device_id is None:
-            raise ValueError(f"No device found with name {device_name}")
+        #device_id = next((id for id in device_ids if device_name in id), None)
+        #if device_id is None:
+        #    raise ValueError(f"No device found with name {device_name}")
         
         # Click on the device name to navigate to the device page
-        await self.page.click(f"span[id='{device_id}_name']")
+        #await self.page.click(f"span[id='{device_id}_name']")
         
         # Wait for the offset selector to be visible
-        await self.page.waitForSelector("select#vtempOffset")
+        #await self.page.waitForSelector("select#vtempOffset")
 
         # Fetch data from the website
-        data = await self.page.evaluate('''() => document.querySelector("select#vtempOffset").value''')
+        #data = await self.page.evaluate('''() => document.querySelector("select#vtempOffset").value''')
 
-        return data
+        return 0
         
 class IntesisOffsetSensor(Entity):
     def __init__(self, device, fetcher):
