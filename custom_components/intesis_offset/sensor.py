@@ -1,6 +1,5 @@
 import logging
 import asyncio
-import nest_asyncio
 
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
@@ -11,13 +10,6 @@ from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEV
 
 DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
-
-def sync_login(fetcher):
-    nest_asyncio.apply()
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    return loop.run_until_complete(fetcher.login())
-
 class WebFetcher:
     def __init__(self, hass, url, username, password):
         self._hass = hass
@@ -28,7 +20,8 @@ class WebFetcher:
         self.browser = None
         
     async def login(self):
-        await self._hass.async_add_executor_job(partial(sync_login, self))
+        loop = asyncio.get_running_loop()
+        await loop.run_in_executor(None, self._login)
         
     async def _login(self):
         self.browser = await launch(headless=True)
