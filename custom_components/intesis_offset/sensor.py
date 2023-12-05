@@ -1,13 +1,18 @@
+import logging
+import asyncio
+
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-import logging
 from functools import partial
 from pyppeteer import launch
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEVICES
 
 DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
+
+def sync_launch():
+    return asyncio.get_event_loop().run_until_complete(launch(headless=True))
 
 class WebFetcher:
     def __init__(self, hass, url, username, password):
@@ -19,7 +24,7 @@ class WebFetcher:
         self.browser = None
         
     async def login(self):
-        self.browser = await self._hass.async_add_executor_job(partial(launch, headless=True))
+        self.browser = await self._hass.async_add_executor_job(sync_launch)
         self.page = await self.browser.newPage()
         await self.page.goto(self.url)
 
