@@ -18,7 +18,7 @@ class WebFetcher:
         self.page = None
         self.browser = None
     
-    def launch_browser():
+    def launch_browser(self):
         return asyncio.run(launch(headless=True))    
     
     async def login(self):
