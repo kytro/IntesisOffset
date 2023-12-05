@@ -20,8 +20,8 @@ class WebFetcher:
             
     async def login(self):
         self.browser = await self._hass.async_add_executor_job(launch)
-        #self.page = await self.browser.newPage()
-        #await self.page.goto(self.url)
+        self.page = await self.browser.newPage()
+        await self.page.goto(self.url)
         
         # Replace 'username_selector' and 'password_selector' with the actual selectors
         #await self.page.type('input[name="signin[username]"]', username)
