@@ -18,6 +18,23 @@ class IntesisWeb:
         self._password = password
         self._device_urls = None
 
+    def get_device_urls(self, html, base_url):
+        # Parse the HTML
+        soup = BeautifulSoup(html, 'html.parser')
+
+        # Find all devices
+        devices = soup.find_all('li', class_='device bgDevice')
+
+        # Extract the device names and their edit URLs
+        device_urls = {}
+        for device in devices:
+            name = device.find('span', id=lambda x: x and x.endswith('_name')).text
+            id = device['id'].replace('device_', '')
+            url = f"{base_url}/device/edit?id={id}"
+            device_urls[name] = url
+
+        return device_urls
+    
     def get_existing_offset(html):
         # Parse the HTML
         soup = BeautifulSoup(html, 'html.parser')
