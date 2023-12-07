@@ -121,10 +121,7 @@ class IntesisOffsetSensor(Entity):
         self._intesisWeb = web
 
     async def async_init(self):
-        self._state = await self.get_offset()
-
-    async def get_offset(self):
-        self._state = await self._intesisWeb(self._name)
+        self._state = await self.async_get_offset(self._name)
 
     @property
     def name(self):
