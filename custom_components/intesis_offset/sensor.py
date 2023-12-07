@@ -112,13 +112,13 @@ class IntesisWeb:
         
         
 class IntesisOffsetSensor(Entity):
-    def __init__(self, hass, intesisWeb, device):
+    def __init__(self, hass, web, device):
         self._hass = hass
         self._name = device['name']
         self._entity_id = device['entity_id']
         self._unique_id = device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
-        self._intesisWeb = intesisWeb
+        self._intesisWeb = web
 
     async def async_init(self):
         self._state = await self.get_offset()
@@ -156,12 +156,12 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     # Get the configuration for this domain
     conf = hass.data[DOMAIN]
     
-    intesisWeb = IntesisWeb(conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD]);
+    web = IntesisWeb(conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD]);
 
     # Create a sensor for each device
     sensors = []
     for device_name, device_config in conf[CONF_DEVICES].items():
-        sensor = IntesisOffsetSensor(hass, intesisWeb, device_config)
+        sensor = IntesisOffsetSensor(hass, web, device_config)
         await sensor.async_init()
         sensors.append(sensor)
 
