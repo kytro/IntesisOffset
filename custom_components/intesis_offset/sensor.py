@@ -77,7 +77,7 @@ class IntesisWeb:
         # Define the payload for post data
         payload = {
             'signin[username]': self._username,
-            'signin[password]': self_.password,
+            'signin[password]': self._password,
             'signin[_csrf_token]': csrf_token
         }
 
