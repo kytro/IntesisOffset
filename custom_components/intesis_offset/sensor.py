@@ -48,28 +48,28 @@ class IntesisWeb:
         # Extract and return the temperature offset from the option's text
         return int(selected_option.text.split(' ')[0])
 
-    def get_device_id(device_name, device_urls):
+    def get_device_id(device_name):
         # Check if the device name exists
-        if device_name not in device_urls:
+        if device_name not in self._device_urls:
             print(f"No device named '{device_name}' found.")
             return None
 
         # Get the URL of the device
-        url = device_urls[device_name]
+        url = self._device_urls[device_name]
 
         # Extract the device ID from the URL
         device_id = url.split('=')[1].split('&')[0]
 
         return device_id
             
-    async def navigate_to_device_and_get_offset(self, s, device_name, device_urls):
+    async def navigate_to_device_and_get_offset(self, s, device_name):
         # Check if the device name exists
-        if device_name not in device_urls:
+        if device_name not in self._device_urls:
             print(f"No device named '{device_name}' found.")
             return None
 
         # Get the URL of the device
-        url = device_urls[device_name]
+        url = self._device_urls[device_name]
 
         # Use the session instance to navigate to the device's edit URL
         response = await s.get(url)
@@ -112,18 +112,18 @@ class IntesisWeb:
         settings_page = await settings_response.text()
 
         # Get the device URLs
-        return self.get_device_urls(settings_page, domain)
+        self._device_urls = self.get_device_urls(settings_page, domain)
     
     async def async_get_offset(self, device_name):
         # Start a session
         s = aiohttp.ClientSession()
-        self._device_urls = await self.login(s)
+        await self.login(s)
         # Check if the device name exists
-        if device_name not in device_urls:
+        if device_name not in self._device_urls:
             print(f"No device named '{device_name}' found.")
             return None
          
-        offset = await self.navigate_to_device_and_get_offset(s, device_name, self._device_urls)
+        offset = await self.navigate_to_device_and_get_offset(s, device_name)
         await s.close()
         return offset
         
