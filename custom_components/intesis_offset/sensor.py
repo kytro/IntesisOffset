@@ -28,7 +28,7 @@ class IntesisWeb:
         # Extract the device names and their edit URLs
         device_urls = {}
         for device in devices:
-            name = device.find('span', id=lambda x: x and x.endswith('_name')).text
+            name = device.find('span', id=lambda x: x and x.endswith('_name')).text.strip()
             id = device['id'].replace('device_', '')
             url = f"{base_url}/device/edit?id={id}"
             device_urls[name] = url
@@ -63,9 +63,6 @@ class IntesisWeb:
         return device_id
             
     async def navigate_to_device_and_get_offset(self, s, device_name):
-        
-        await asyncio.sleep(2)
-        
         # Check if the device name exists
         if device_name not in self._device_urls:
             print(f"No device named '{device_name}' found.")
