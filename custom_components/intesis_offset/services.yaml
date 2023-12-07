@@ -1,0 +1,9 @@
+set_offset:
+  description: Set the offset for a intesis air conditioner.
+  fields:
+    entity_id:
+      description: The entity id of the sensor.
+      example: 'intesis.study'
+    offset:
+      description: The offset to set (-5 to 5)
+      example: 0
