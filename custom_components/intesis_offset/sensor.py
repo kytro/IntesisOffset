@@ -82,7 +82,7 @@ class IntesisWeb:
         }
 
         # Post the payload to the site to log in
-        p = await s.post(self._url, data=payload)
+        p = await s.post(self._base_url, data=payload)
 
         # Extract the domain from the initial URL
         domain = url[:url.find("/", 8)]
