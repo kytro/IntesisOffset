@@ -67,7 +67,7 @@ class IntesisWeb:
     
     async def login(self, s):
         # Get the login page
-        login_response = await s.get(self._url)
+        login_response = await s.get(self._base_url)
         login_html = await login_response.text()
 
         # Parse the HTML of the login page to find the CSRF token
