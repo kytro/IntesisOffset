@@ -85,7 +85,7 @@ class IntesisWeb:
         p = await s.post(self._base_url, data=payload)
 
         # Extract the domain from the initial URL
-        domain = url[:url.find("/", 8)]
+        domain = self._base_url[:self._base_url.find("/", 8)]
 
         # Create the absolute URL
         settings_url = f"{domain}/device/list"
