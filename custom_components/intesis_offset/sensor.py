@@ -12,6 +12,12 @@ from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEV
 DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
 
+# Define the service schema
+SET_OFFSET_SCHEMA = vol.Schema({
+    vol.Required(ENTITY_ID): cv.entity_id,
+    vol.Required('offset'): vol.All(vol.Coerce(int), vol.Clamp(min=-5, max=5))
+})
+
 class IntesisWeb:
     def __init__(self, base_url, username, password):
         self._base_url = base_url
@@ -200,8 +206,8 @@ class IntesisOffsetSensor(Entity):
     def __init__(self, hass, web, device):
         self._hass = hass
         self._name = device['name']
-        self._entity_id = device['entity_id']
-        self._unique_id = device['entity_id']
+        self._entity_id = "intesis." + device['entity_id']
+        self._unique_id = "intesis." + device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._intesisWeb = web
 
@@ -268,6 +274,7 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
             if not success:
                 _LOGGER.error("Failed to set offset for %s", entity_id)
 
-    hass.services.async_register(DOMAIN, 'set_offset', async_handle_set_offset)
+    # Register the service with the schema
+    hass.services.async_register(DOMAIN, 'set_offset', async_handle_set_offset, schema=SET_OFFSET_SCHEMA)
     
     async_add_entities(sensors, True)
