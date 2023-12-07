@@ -1,6 +1,7 @@
 import logging
 import aiohttp
 import asyncio
+import voluptuous as vol
 
 from bs4 import BeautifulSoup
 from homeassistant.helpers import service
