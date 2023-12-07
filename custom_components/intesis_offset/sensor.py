@@ -63,6 +63,9 @@ class IntesisWeb:
         return device_id
             
     async def navigate_to_device_and_get_offset(self, s, device_name):
+        
+        await asyncio.sleep(2)
+        
         # Check if the device name exists
         if device_name not in self._device_urls:
             print(f"No device named '{device_name}' found.")
@@ -76,7 +79,7 @@ class IntesisWeb:
 
         # Get the HTML of the page
         html = await response.text()
-
+        
         # Get the existing temperature offset
         existing_offset = self.get_existing_offset(html)
 
