@@ -61,7 +61,7 @@ class IntesisWeb:
         html = await response.text()
 
         # Get the existing temperature offset
-        existing_offset = get_existing_offset(html)
+        existing_offset = self.get_existing_offset(html)
 
         return existing_offset
     
@@ -95,18 +95,18 @@ class IntesisWeb:
         settings_page = await settings_response.text()
 
         # Get the device URLs
-        return get_device_urls(settings_page, domain)
+        return self.get_device_urls(settings_page, domain)
     
     async def async_get_offset(self, device_name):
         # Start a session
         s = aiohttp.ClientSession()
-        self._device_urls = await login(s)
+        self._device_urls = await self.login(s)
         # Check if the device name exists
         if device_name not in device_urls:
             print(f"No device named '{device_name}' found.")
             return None
          
-        offset = await navigate_to_device_and_get_offset(s, device_name, self._device_urls)
+        offset = await self.navigate_to_device_and_get_offset(s, device_name, self._device_urls)
         await s.close()
         return offset
         
