@@ -1,96 +1,134 @@
 import logging
+import aiohttp
 import asyncio
-import time
 
+from bs4 import BeautifulSoup
 from homeassistant.helpers.entity import Entity
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
-from functools import partial
-from pyppeteer import launch
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEVICES
 
 DOMAIN = "intesis_offset"
 _LOGGER = logging.getLogger(__name__)
 
-class WebFetcher:
-    def __init__(self, hass, url, username, password):
-        self._hass = hass
-        self.url = url
-        self.username = username
-        self.password = password
-        self.page = None
-        self.browser = None
+class IntesisWeb:
+    def __init__(self, base_url, username, password):
+        self._base_url = base_url
+        self._username = username
+        self._password = password
+        self._device_urls = None
 
-    async def login(self):
-        self.browser = await self._hass.async_add_executor_job(launch)
-        self.page = await self.browser.newPage()
-        await self.page.goto(self.url)
+    def get_existing_offset(html):
+        # Parse the HTML
+        soup = BeautifulSoup(html, 'html.parser')
 
-        # Replace 'username_selector' and 'password_selector' with the actual selectors
-        await self.page.type('input[name="signin[username]"]', self.username)
-        await self.page.type('input[name="signin[password]"]', self.password)
+        # Find the select element for the temperature offset
+        select = soup.find('select', id='vtempOffset')
 
-        # Replace 'login_button_selector' with the actual selector
-        await self.page.click('input[type="submit"]')
-        await self.page.waitForNavigation()
+        # Find the selected option
+        selected_option = select.find('option', selected=True)
 
-        # Navigate to the next page
-        await self.page.goto('https://accloud.intesis.com/device/list')
-        await self.update(self.page)
+        # Extract and return the temperature offset from the option's text
+        return int(selected_option.text.split(' ')[0])
 
-    async def fetch_data(self, device_name):
-        if self.page is None:
-            await self.login()
+    def get_device_id(device_name, device_urls):
+        # Check if the device name exists
+        if device_name not in device_urls:
+            print(f"No device named '{device_name}' found.")
+            return None
 
-        # Check if the page has the right elements
-        # element = await self.page.querySelector('ul.devices')
-        # if element is None:
-        #    await self.login()
+        # Get the URL of the device
+        url = device_urls[device_name]
 
-        # Get the device IDs
-        # device_ids = await self.page.evaluate('''() => Array.from(document.querySelectorAll('ul.devices li.device span[id^="device_"]')).map(device => device.id)''')
+        # Extract the device ID from the URL
+        device_id = url.split('=')[1].split('&')[0]
 
-        # Find the correct device_id from device_ids using device_name
-        # device_id = next((id for id in device_ids if device_name in id), None)
-        # if device_id is None:
-        #    raise ValueError(f"No device found with name {device_name}")
+        return device_id
+            
+    async def navigate_to_device_and_get_offset(self, s, device_name, device_urls):
+        # Check if the device name exists
+        if device_name not in device_urls:
+            print(f"No device named '{device_name}' found.")
+            return None
 
-        # Click on the device name to navigate to the device page
-        # await self.page.click(f"span[id='{device_id}_name']")
+        # Get the URL of the device
+        url = device_urls[device_name]
 
-        # Wait for the offset selector to be visible
-        # await self.page.waitForSelector("select#vtempOffset")
+        # Use the session instance to navigate to the device's edit URL
+        response = await s.get(url)
 
-        # Fetch data from the website
-        # data = await self.page.evaluate('''() => document.querySelector("select#vtempOffset").value''')
+        # Get the HTML of the page
+        html = await response.text()
 
-        return 0
+        # Get the existing temperature offset
+        existing_offset = get_existing_offset(html)
 
+        return existing_offset
+    
+    async def login(self, s):
+        # Get the login page
+        login_response = await s.get(self._url)
+        login_html = await login_response.text()
 
+        # Parse the HTML of the login page to find the CSRF token
+        soup = BeautifulSoup(login_html, 'html.parser')
+        csrf_token = soup.find('input', attrs={'name': 'signin[_csrf_token]'})['value']
 
+        # Define the payload for post data
+        payload = {
+            'signin[username]': self._username,
+            'signin[password]': self_.password,
+            'signin[_csrf_token]': csrf_token
+        }
+
+        # Post the payload to the site to log in
+        p = await s.post(self._url, data=payload)
+
+        # Extract the domain from the initial URL
+        domain = url[:url.find("/", 8)]
+
+        # Create the absolute URL
+        settings_url = f"{domain}/device/list"
+
+        # Follow the link and get the new page content
+        settings_response = await s.get(settings_url)
+        settings_page = await settings_response.text()
+
+        # Get the device URLs
+        return get_device_urls(settings_page, domain)
+    
+    async def async_get_offset(self, device_name):
+        # Start a session
+        s = aiohttp.ClientSession()
+        self._device_urls = await login(s)
+        # Check if the device name exists
+        if device_name not in device_urls:
+            print(f"No device named '{device_name}' found.")
+            return None
+         
+        offset = await navigate_to_device_and_get_offset(s, device_name, self._device_urls)
+        await s.close()
+        return offset
+        
+        
 class IntesisOffsetSensor(Entity):
-    def __init__(self, hass, device, fetcher):
+    def __init__(self, hass, intesisWeb, device):
         self._hass = hass
         self._name = device['name']
         self._entity_id = device['entity_id']
         self._unique_id = device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
-        self._linked_entity_state = None
-        self._fetcher = fetcher
+        self._intesisWeb = intesisWeb
 
     async def async_init(self):
         self._state = await self.get_offset()
 
     async def get_offset(self):
-        self._state = await self._fetcher.fetch_data(self._name)
+        self._state = await self._intesisWeb(self._name)
 
     @property
     def name(self):
         return self._name
-
-    @property
-    def state(self):
-        return self._state
 
     @property
     def name(self):
@@ -117,15 +155,13 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
     """Set up the sensor platform."""
     # Get the configuration for this domain
     conf = hass.data[DOMAIN]
-
-    # Create a single WebFetcher for all devices
-    fetcher = WebFetcher(hass, conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD])
-    # await hass.async_add_executor_job(partial(sync_login, fetcher))
+    
+    intesisWeb = IntesisWeb(conf[CONF_URL], conf[CONF_USERNAME], conf[CONF_PASSWORD]);
 
     # Create a sensor for each device
     sensors = []
     for device_name, device_config in conf[CONF_DEVICES].items():
-        sensor = IntesisOffsetSensor(hass, device_config, fetcher)
+        sensor = IntesisOffsetSensor(hass, intesisWeb, device_config)
         await sensor.async_init()
         sensors.append(sensor)
 
