@@ -6,7 +6,6 @@ import voluptuous as vol
 from bs4 import BeautifulSoup
 from homeassistant.helpers import service
 from homeassistant.helpers.entity import Entity
-from homeassistant.const import ENTITY_ID
 from homeassistant.core import callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.const import CONF_USERNAME, CONF_PASSWORD, CONF_URL, CONF_DEVICES
@@ -16,9 +15,10 @@ _LOGGER = logging.getLogger(__name__)
 
 # Define the service schema
 SET_OFFSET_SCHEMA = vol.Schema({
-    vol.Required(ENTITY_ID): cv.entity_id,
+    vol.Required('entity_id'): cv.entity_id,
     vol.Required('offset'): vol.All(vol.Coerce(int), vol.Clamp(min=-5, max=5))
 })
+
 
 class IntesisWeb:
     def __init__(self, base_url, username, password):
