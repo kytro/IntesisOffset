@@ -35,7 +35,7 @@ class IntesisWeb:
 
         return device_urls
     
-    def get_existing_offset(html):
+    def get_existing_offset(self, html):
         # Parse the HTML
         soup = BeautifulSoup(html, 'html.parser')
 
