@@ -249,6 +249,11 @@ class IntesisOffsetSensor(Entity):
         return {
             'Linked Entity': self._linked_entity_id
         }
+        
+    @property
+    def entity_id(self):
+        """Return the entity_id of the sensor."""
+        return f"intesis.{self._entity_id}
 
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
