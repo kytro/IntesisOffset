@@ -163,7 +163,7 @@ class IntesisWeb:
         value = offset_to_value[offset]
         
         # Get the device ID
-        device_id = await self.get_device_id(device_name)
+        device_id = self.get_device_id(device_name)
         
         #uid - static
         uid = 50002
