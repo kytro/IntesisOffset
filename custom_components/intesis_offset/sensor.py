@@ -209,8 +209,8 @@ class IntesisOffsetSensor(Entity):
     def __init__(self, hass, web, device):
         self._hass = hass
         self._name = device['name']
-        self._entity_id = "intesis." + device['entity_id']
-        self._unique_id = "intesis." + device['entity_id']
+        self._name = "intesis_" + device['name']
+        self._unique_id = "intesis_" + device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._intesisWeb = web
 
@@ -250,12 +250,6 @@ class IntesisOffsetSensor(Entity):
             'Linked Entity': self._linked_entity_id
         }
         
-    @property
-    def entity_id(self):
-        """Return the entity_id of the sensor."""
-        return f"intesis.{self._entity_id}"
-
-
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the sensor platform."""
     # Get the configuration for this domain
