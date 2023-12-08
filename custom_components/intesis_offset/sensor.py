@@ -195,15 +195,17 @@ class IntesisWeb:
             'sec-ch-ua-mobile': '?0',
             'sec-ch-ua-platform': '"Windows"'
         }
-
-        # Make the request
-        async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers) as response:
-                if response.status == 200:
-                    return True
-                else:
-                    return False
         
+        # Start a session
+        s = aiohttp.ClientSession()
+        await self.login(s)
+        response = await s.post(url, headers=headers)
+        await s.close()
+        
+        if response.status == 200:
+            return True
+        else:
+            return False
         
 class IntesisOffsetSensor(Entity):
     def __init__(self, hass, web, device):
