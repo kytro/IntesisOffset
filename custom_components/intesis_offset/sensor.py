@@ -58,7 +58,7 @@ class IntesisWeb:
         # Extract and return the temperature offset from the option's text
         return int(selected_option.text.split(' ')[0])
 
-    def get_device_id(device_name):
+    def get_device_id(self, device_name):
         # Check if the device name exists
         if device_name not in self._device_urls:
             print(f"No device named '{device_name}' found.")
@@ -271,12 +271,13 @@ async def async_setup_platform(hass, config, async_add_entities, discovery_info=
 
         entity = next((sensor for sensor in sensors if sensor.entity_id == entity_id), None)
 
-        if entity is not None:
+        if entity is not None and isinstance(entity, IntesisOffsetSensor):
             success = await entity.async_set_offset(offset)
             if not success:
                 _LOGGER.error("Failed to set offset for %s", entity_id)
+        else:
+            _LOGGER.error("The entity %s is not an Intesis offset sensor", entity_id)
 
-    # Register the service with the schema
     hass.services.async_register(DOMAIN, 'set_offset', async_handle_set_offset, schema=SET_OFFSET_SCHEMA)
     
     async_add_entities(sensors, True)
