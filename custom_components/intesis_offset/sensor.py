@@ -169,7 +169,7 @@ class IntesisWeb:
         uid = 50002
         
         #used_id - static for now
-        used_id = 116771
+        user_id = 116771
 
         # Create the URL
         url = f"{self._base_url}/device/setVal?id={device_id}&uid={uid}&value={value}&userId={user_id}"
