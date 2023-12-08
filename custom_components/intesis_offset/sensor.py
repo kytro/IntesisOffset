@@ -209,7 +209,7 @@ class IntesisOffsetSensor(Entity):
     def __init__(self, hass, web, device):
         self._hass = hass
         self._name = device['name']
-        self._name = "intesis_" + device['name']
+        self._entity_id = "intesis_" + device['entity_id']
         self._unique_id = "intesis_" + device['entity_id']
         self._linked_entity_id = device['linked_entity_id']
         self._intesisWeb = web
